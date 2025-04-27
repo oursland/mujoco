@@ -29,7 +29,7 @@ set(MUJOCO_DEP_VERSION_lodepng
 
 project(
   mujoco_simulate
-  VERSION 3.3.5
+  VERSION 3.3.2
   DESCRIPTION "MuJoCo simulate binaries"
   HOMEPAGE_URL "https://mujoco.org"
 )
@@ -43,7 +43,6 @@ endif()
 
 option(SIMULATE_BUILD_EXECUTABLE "Build the simulate executable binary." ON)
 option(SIMULATE_GLFW_DYNAMIC_SYMBOLS "Whether to resolve GLFW symbols dynamically." OFF)
-set(SIMULATE_COMMAND_PREFIX "" CACHE STRING "Prefix to prepend to the name of the simulate command.")
 
 # Check if we are building as standalone project.
 set(SIMULATE_STANDALONE OFF)
@@ -112,7 +111,6 @@ target_sources(
 target_compile_options(platform_ui_adapter PRIVATE ${MUJOCO_SIMULATE_COMPILE_OPTIONS})
 if(APPLE)
   target_sources(platform_ui_adapter PUBLIC glfw_corevideo.h PRIVATE glfw_corevideo.mm)
-  set_source_files_properties(glfw_corevideo.mm PROPERTIES COMPILE_FLAGS -Wno-deprecated-declarations)
   target_link_libraries(platform_ui_adapter PUBLIC "-framework CoreVideo")
 endif()
 target_include_directories(
@@ -170,10 +168,6 @@ if(SIMULATE_BUILD_EXECUTABLE)
       COMMAND ${CMAKE_COMMAND} -E rm ${CMAKE_CURRENT_SOURCE_DIR}/mujoco.ico
     )
   endif()
-  if(NOT SIMULATE_COMMAND_PREFIX STREQUAL "")
-    set_target_properties(simulate PROPERTIES
-      OUTPUT_NAME ${SIMULATE_COMMAND_PREFIX}simulate)
-  endif()
 
   target_link_libraries(
     simulate
@@ -183,13 +177,6 @@ if(SIMULATE_BUILD_EXECUTABLE)
     Threads::Threads
     lodepng
   )
-
-  if (MUJOCO_WITH_USD)
-    target_link_libraries(
-      simulate
-      mujoco::usd::mjcf
-    )
-  endif()
 
   target_link_options(simulate PRIVATE ${MUJOCO_SIMULATE_LINK_OPTIONS})
 
@@ -256,22 +243,6 @@ if(SIMULATE_BUILD_EXECUTABLE)
       DEPENDS
       MUJOCO_ENABLE_RPATH
     )
-
-    if (MUJOCO_WITH_USD)
-      target_compile_definitions(simulate PUBLIC mjUSEUSD)
-
-      # Add support to RPATH for the samples.
-      target_add_rpath(
-        TARGETS
-        simulate
-        INSTALL_DIRECTORY
-        "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}"
-        LIB_DIRS
-        ${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}/mujocoUsd ${USD_DIR}/lib
-        DEPENDS
-        MUJOCO_ENABLE_RPATH
-      )
-    endif()
 
     install(
       TARGETS simulate
