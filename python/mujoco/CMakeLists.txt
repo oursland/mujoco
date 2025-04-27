@@ -132,7 +132,7 @@ endif()
 set(MUJOCO_PYTHON_ABSL_TARGETS absl::core_headers absl::flat_hash_map absl::span)
 findorfetch(
   USE_SYSTEM_PACKAGE
-  OFF
+  ON
   PACKAGE_NAME
   absl
   LIBRARY_NAME
@@ -145,27 +145,12 @@ findorfetch(
   ${MUJOCO_PYTHON_ABSL_TARGETS}
   EXCLUDE_FROM_ALL
 )
-foreach(absl_target IN ITEMS ${MUJOCO_PYTHON_ABSL_TARGETS})
-  get_target_property(absl_target_aliased ${absl_target} ALIASED_TARGET)
-  if(absl_target_aliased)
-    set(absl_target ${absl_target_aliased})
-  endif()
-  get_target_property(absl_target_type ${absl_target} TYPE)
-  if(NOT
-     ${absl_target_type}
-     STREQUAL
-     "INTERFACE_LIBRARY"
-  )
-    target_compile_options(${absl_target} PRIVATE ${MUJOCO_MACOS_COMPILE_OPTIONS})
-    target_link_options(${absl_target} PRIVATE ${MUJOCO_MACOS_LINK_OPTIONS})
-  endif()
-endforeach()
 
 # ==================== EIGEN ===================================================
 add_compile_definitions(EIGEN_MPL2_ONLY)
 findorfetch(
   USE_SYSTEM_PACKAGE
-  OFF
+  ON
   PACKAGE_NAME
   Eigen3
   LIBRARY_NAME
