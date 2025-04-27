@@ -24,7 +24,7 @@ set(MSVC_INCREMENTAL_DEFAULT ON)
 
 project(
   mujoco_samples
-  VERSION 3.3.5
+  VERSION 3.3.2
   DESCRIPTION "MuJoCo samples binaries"
   HOMEPAGE_URL "https://mujoco.org"
 )
@@ -129,28 +129,24 @@ if(APPLE AND MUJOCO_BUILD_MACOS_FRAMEWORKS)
   set(_INSTALL_SAMPLES OFF)
 endif()
 
-option(MUJOCO_SAMPLES_INSTALL "If ON, also install samples executables." ${_INSTALL_SAMPLES})
+if(_INSTALL_SAMPLES)
 
-if(MUJOCO_SAMPLES_INSTALL)
+  include(TargetAddRpath)
 
-  if(MUJOCO_ENABLE_RPATH)
-    include(TargetAddRpath)
-
-    # Add support to RPATH for the samples.
-    target_add_rpath(
-      TARGETS
-      basic
-      compile
-      record
-      testspeed
-      INSTALL_DIRECTORY
-      "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}"
-      LIB_DIRS
-      "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
-      DEPENDS
-      MUJOCO_ENABLE_RPATH
-    )
-  endif()
+  # Add support to RPATH for the samples.
+  target_add_rpath(
+    TARGETS
+    basic
+    compile
+    record
+    testspeed
+    INSTALL_DIRECTORY
+    "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}"
+    LIB_DIRS
+    "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}"
+    DEPENDS
+    MUJOCO_ENABLE_RPATH
+  )
 
   install(
     TARGETS basic
