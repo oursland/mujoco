@@ -35,7 +35,7 @@ __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
 _SYSTEM = platform.system()
 if _SYSTEM == 'Windows':
-  ctypes.WinDLL(os.path.join(os.path.dirname(__file__), 'mujoco.dll'))
+  ctypes.WinDLL('mujoco.dll')
 elif _SYSTEM == 'Darwin':
   proc_translated = subprocess.run(
       ['sysctl', '-n', 'sysctl.proc_translated'], capture_output=True).stdout
@@ -198,8 +198,13 @@ _specs.MjSpec.to_zip = to_zip
 _structs.MjData.bind = _bind_data
 _structs.MjModel.bind = _bind_model
 
-HEADERS_DIR = os.path.join(os.path.dirname(__file__), 'include/mujoco')
-PLUGINS_DIR = os.path.join(os.path.dirname(__file__), 'plugin')
+if _SYSTEM == 'Windows':
+  _MJ_INSTALL_DIR = os.path.join(os.environ.get('CONDA_PREFIX'), 'Library')
+else:
+  _MJ_INSTALL_DIR = os.environ.get('CONDA_PREFIX')
+
+HEADERS_DIR = os.path.join(_MJ_INSTALL_DIR, 'include/mujoco')
+PLUGINS_DIR = os.path.join(_MJ_INSTALL_DIR, 'bin/mujoco_plugin')
 
 PLUGIN_HANDLES = []
 

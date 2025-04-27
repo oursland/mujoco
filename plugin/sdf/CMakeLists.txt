@@ -49,3 +49,18 @@ target_link_options(
   ${MUJOCO_MACOS_LINK_OPTIONS}
   ${EXTRA_LINK_OPTIONS}
 )
+
+if(MUJOCO_INSTALL_PLUGINS)
+  if(WIN32)
+    install(TARGETS sdf
+            ARCHIVE DESTINATION "$ENV{TEMP}"
+            LIBRARY DESTINATION "$ENV{TEMP}"
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}/mujoco_plugin")
+  else()
+    install(TARGETS sdf
+            ARCHIVE DESTINATION "${CMAKE_INSTALL_BINDIR}/mujoco_plugin"
+            LIBRARY DESTINATION "${CMAKE_INSTALL_BINDIR}/mujoco_plugin"
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}/mujoco_plugin")
+  endif()
+endif()
+
