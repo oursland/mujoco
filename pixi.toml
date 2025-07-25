@@ -1,0 +1,51 @@
+[workspace]
+authors = ["Jacob Oursland <jacob.oursland@gmail.com>"]
+channels = ["file:///Users/jso/output", "conda-forge"]
+name = "mujoco"
+platforms = ["osx-arm64"]
+version = "3.3.1"
+
+[dependencies]
+cmake = ">=3.31.6,<4"
+compilers = ">=1.9.0,<2"
+eigen = ">=3.4.0,<4"
+git = ">=2.49.0,<3"
+glfw = ">=3.4,<4"
+grpcio = ">=1.71.0,<2"
+gtest = ">=1.16.0,<2"
+libabseil = ">=20250127.1,<20250128"
+libccd-double = ">=2.1,<3"
+lldb = ">=19.1.7,<20"
+llvm = ">=18.1.8,<19"
+lodepng = ">=20220109,<20220110"
+ninja = ">=1.12.1,<2"
+numpy = ">=2,<3"
+openusd = ">=25.5.1,<26"
+python = "==3.13.3"
+qhull = ">=2020.2,<2021"
+tbb-devel = "==2021.13.0"
+tinyxml2 = ">=11.0.0,<12"
+zlib = ">=1.3.1,<2"
+
+[tasks]
+configure = { cmd = [
+    "cmake",
+    "-Wno-dev",
+    "-B",
+    "build",
+    "-GNinja",
+    "-DCMAKE_POLICY_VERSION_MINIMUM=3.5",
+    "-DCMAKE_IGNORE_PREFIX_PATH=\"/opt/homebrew;/usr/local/homebrew\"",
+    "-DCMAKE_BUILD_TYPE:STRING=Debug",
+    "-DCMAKE_CXX_COMPILER_AR=$(which llvm-ar)",
+    "-DCMAKE_CXX_COMPILER_RANLIB=$(which llvm-ranlib)",
+    "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+    "-DBUILD_TESTING=ON",
+    "-DMUJOCO_WITH_USD=ON",
+    "-DUSD_DIR=$CONDA_PREFIX/include/pxr/usd",
+    "-DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX",
+], env={ CFLAGS="", CXXFLAGS="", DEBUG_CFLAGS="", DEBUG_CXXFLAGS="" } }
+build = { cmd = [ "cmake", "--build", "build" ], env={ CFLAGS="", CXXFLAGS="", DEBUG_CFLAGS="", DEBUG_CXXFLAGS="" } }
+install = { cmd = [ "cmake", "--install", "build" ], env={ CFLAGS="", CXXFLAGS="", DEBUG_CFLAGS="", DEBUG_CXXFLAGS="" } }
+simulate = { cmd = [ "build/bin/simulate" ] }
+test = { cmd = [ "ctest", "--test-dir", "build" ], env={ CFLAGS="", CXXFLAGS="", DEBUG_CFLAGS="", DEBUG_CXXFLAGS="" } }
